@@ -13,6 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Backup Database
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            docker exec postiz-postgres pg_dump -U postiz-user postiz-db > /home/ubuntu/backup_$(date +%Y%m%d_%H%M%S).sql
+
       - name: Deploy to Oracle Cloud
         uses: appleboy/ssh-action@master
         with:
@@ -39,6 +48,11 @@ jobs:
             
             # Show last 20 lines of logs
             docker compose logs --tail=20 postiz
+
+      - name: Health Check
+        run: |
+          sleep 10
+          curl --fail https://postiz.dev || exit 1
 
       - name: Deployment notification
         if: always()
