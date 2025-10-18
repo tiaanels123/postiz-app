@@ -318,5 +318,3 @@ If you encounter issues:
 ## License
 
 This project is licensed under AGPL-3.0. See [LICENSE](LICENSE) file for details.
-
-Test deployment      
